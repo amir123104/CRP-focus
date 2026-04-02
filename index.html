@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>CRP Focus – Attention intelligence</title>
+  <!-- Inter & Space Grotesk fonts (same as reference) -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome 6 (free icons) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #ffffff;
+      color: #111827;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: 90px; /* space for bottom navbar */
+    }
+
+    /* monochrome, grid overlay (subtle) */
+    .grid-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 999;
+      background-image: 
+        repeating-linear-gradient(0deg, rgba(0,0,0,0.02) 0px, rgba(0,0,0,0.02) 1px, transparent 1px, transparent 32px),
+        repeating-linear-gradient(90deg, rgba(0,0,0,0.02) 0px, rgba(0,0,0,0.02) 1px, transparent 1px, transparent 32px);
+    }
+
+    /* container – max-width like cuby editor */
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* cards inspired by the Cuby Editor (white, subtle border, slight radius) */
+    .mobile-card {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 24px;
+      border: 1px solid #e5e7eb;
+      transition: all 0.2s ease;
+    }
+
+    /* section spacing */
+    section {
+      padding: 60px 0;
+    }
+
+    /* section title – clean, small caps */
+    .section-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      color: #4b5563;
+      border-left: 2px solid #111827;
+      padding-left: 14px;
+    }
+
+    /* bolder but why */
+    .section-title.bolder {
+      font-weight: 800;
+      font-size: 0.9rem;
+      color: #000000;
+    }
+
+    /* hero */
+    .hero {
+      position: relative;
+      height: 100vh;
+      min-height: 680px;
+      display: flex;
+      align-items: center;
+      background: #000;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(100%) brightness(0.85) contrast(1.05);
+      z-index: 0;
+    }
+
+    .hero-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.3);
+      z-index: 1;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .hero-left h1 {
+      font-family: 'Space Grotesk', monospace;
+      font-size: clamp(3.5rem, 10vw, 7rem);
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      color: white;
+      text-transform: uppercase;
+      margin: 0;
+    }
+
+    .hero-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .btn {
+      background: transparent;
+      border: 1.5px solid white;
+      color: white;
+      padding: 0.9rem 2rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      text-decoration: none;
+      text-align: center;
+      min-width: 180px;
+      transition: all 0.2s ease;
+      border-radius: 40px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btn:hover {
+      background: white;
+      color: black;
+      border-color: white;
+      transform: translateY(-2px);
+    }
+
+    /* WhatsApp-style message bubbles */
+    .notification-demo {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      justify-content: center;
+      margin: 1rem 0;
+    }
+
+    .chat-bubble {
+      flex: 1;
+      min-width: 260px;
+      max-width: 360px;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 24px;
+      padding: 1.2rem 1.5rem;
+      transition: all 0.2s;
+      cursor: pointer;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    }
+
+    .bubble-received {
+      border-bottom-left-radius: 6px;
+      background: #f9fafb;
+    }
+
+    .bubble-sent {
+      border-bottom-right-radius: 6px;
+      border-color: #111827;
+      border-width: 1.5px;
+    }
+
+    .bubble-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #6b7280;
+      margin-bottom: 0.5rem;
+    }
+
+    .message-text {
+      font-size: 0.95rem;
+      line-height: 1.4;
+      margin: 0.5rem 0;
+      color: #111827;
+    }
+
+    .importance-badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+      border-top: 1px solid #e5e7eb;
+      margin-top: 0.75rem;
+      padding-top: 0.6rem;
+      color: #4b5563;
+      transition: all 0.2s;
+    }
+
+    .chat-bubble.revealed .importance-badge {
+      border-top-color: #111827;
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .interactive-hint {
+      text-align: center;
+      font-size: 0.7rem;
+      color: #6b7280;
+      margin-top: 1rem;
+    }
+
+    /* classification counters */
+    .stat-bold {
+      font-weight: 800;
+      background: #f3f4f6;
+      padding: 0 4px;
+      display: inline-block;
+    }
+
+    .lead-text {
+      font-size: 1.2rem;
+      font-weight: 460;
+      margin-bottom: 1rem;
+    }
+
+    .classification-grid {
+      max-width: 860px;
+    }
+
+    /* stay organized / connect left aligned */
+    .stay-block p, .connect-block p {
+      font-size: 1.3rem;
+      font-weight: 460;
+      line-height: 1.45;
+    }
+
+    /* research full image background */
+    .research-section {
+      position: relative;
+      background-image: url('https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1920&h=1080&fit=crop&auto=format');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      min-height: 480px;
+      display: flex;
+      align-items: center;
+      margin: 40px 0;
+    }
+
+    .research-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      z-index: 1;
+    }
+
+    .research-text {
+      position: relative;
+      z-index: 2;
+      color: white;
+      font-size: 1.2rem;
+      line-height: 1.65;
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 2rem;
+      white-space: pre-line;
+      font-weight: 450;
+      text-shadow: none;
+    }
+
+    /* square logos grid */
+    .logo-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+      justify-items: center;
+      align-items: center;
+      margin: 2rem 0;
+    }
+
+    .logo-item img {
+      width: 100px;
+      height: 100px;
+      object-fit: contain;
+      filter: grayscale(100%) contrast(1.1);
+      transition: filter 0.2s, transform 0.2s;
+    }
+
+    .logo-item:hover img {
+      filter: grayscale(0%);
+      transform: scale(1.02);
+    }
+
+    /* bottom navbar (exactly as cuby editor style but monochrome) */
+    .bottom-nav {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255,255,255,0.98);
+      backdrop-filter: none;
+      border-radius: 40px;
+      padding: 8px 20px;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      border: 1px solid #e5e7eb;
+      display: flex;
+      gap: 24px;
+      min-width: 280px;
+      justify-content: center;
+    }
+
+    .nav-link {
+      background: transparent;
+      border: none;
+      padding: 10px 16px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #111827;
+      text-decoration: none;
+      transition: all 0.2s;
+      border-radius: 32px;
+      cursor: pointer;
+    }
+
+    .nav-link:hover {
+      background: #f3f4f6;
+      transform: translateY(-2px);
+    }
+
+    /* responsive */
+    @media (max-width: 780px) {
+      .hero-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2rem;
+      }
+      .hero-left h1 {
+        font-size: 3.5rem;
+      }
+      .btn {
+        min-width: 150px;
+        padding: 0.7rem 1.5rem;
+      }
+      .logo-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+      }
+      .research-text {
+        font-size: 1rem;
+      }
+      .bottom-nav {
+        gap: 8px;
+        padding: 6px 12px;
+      }
+      .nav-link {
+        padding: 6px 12px;
+        font-size: 0.65rem;
+      }
+    }
+
+    /* fade animations */
+    .fade-section {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fade-section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 0;
+      border-top: 1px solid #e5e7eb;
+      font-size: 0.75rem;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+<div class="grid-overlay"></div>
+
+<!-- HERO with two buttons on right -->
+<section class="hero" id="home">
+  <img class="hero-bg" src="https://images.unsplash.com/photo-1581091226033-d5c48150dbaa?w=1920&h=1080&fit=crop&auto=format" alt="CRP Focus background" id="HERO_IMAGE_URL">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-left">
+      <h1>CRP</h1>
+      <h1>FOCUS</h1>
+    </div>
+    <div class="hero-buttons">
+      <a href="https://scxtax-ra.myshopify.com/" target="_blank" class="btn" id="heroGetCuby">GET A CUBY</a>
+      <a href="#" class="btn" id="heroGetApp">GET THE APP</a>
+    </div>
+  </div>
+</section>
+
+<main>
+  <div class="container">
+    <!-- 2. Notification demo (WhatsApp style bubbles) -->
+    <section class="fade-section">
+      <div class="mobile-card">
+        <div class="notification-demo">
+          <div class="chat-bubble bubble-received" data-importance="not-important">
+            <div class="bubble-header"><span>📱 Instagram</span><span>2 min ago</span></div>
+            <div class="message-text">liked your photo · “summer memories”</div>
+            <div class="importance-badge">⚬ importance: hidden — click to reveal</div>
+          </div>
+          <div class="chat-bubble bubble-sent" data-importance="important">
+            <div class="bubble-header"><span>⚡ CRP Focus · cuby</span><span>just now</span></div>
+            <div class="message-text">Boardroom meeting in 12 minutes. High priority.</div>
+            <div class="importance-badge">⚬ importance: hidden — click to reveal</div>
+          </div>
+        </div>
+        <div class="interactive-hint">✧ click any message to reveal importance (double‑click to reset) ✧</div>
+      </div>
+    </section>
+
+    <!-- 3. classification section -->
+    <section class="fade-section" id="classification-section">
+      <div class="section-title">classification</div>
+      <div class="classification-grid">
+        <p class="lead-text">CRP focus classifies all of your notifications to important and not important</p>
+        <p>we found that in average, one person gets over <strong class="stat-bold"><span id="counter4500">0</span></strong> messages per day and only <strong class="stat-bold"><span id="counter8">0</span>%</strong> of them are really necessary</p>
+        <p>so now, you don't need anymore to open every time your phone just to find out its not important,<br>your cuby will tell you when its important.</p>
+      </div>
+    </section>
+
+    <!-- 4. stay organized -->
+    <section class="fade-section">
+      <div class="section-title">stay organized</div>
+      <div class="stay-block">
+        <p>CRP focus also can detect meetings, events and tasks<br>and add them to a task list and google calendar</p>
+      </div>
+    </section>
+
+    <!-- 5. connect (left aligned) -->
+    <section class="fade-section">
+      <div class="section-title">connect</div>
+      <div class="connect-block">
+        <p>connect your cuby<br>show only what really matters.</p>
+      </div>
+    </section>
+
+    <!-- 6. but why? (bolder) -->
+    <section class="fade-section">
+      <div class="section-title bolder">but why?</div>
+      <div style="height: 10px;"></div>
+    </section>
+  </div>
+
+  <!-- 7. research text with full image background -->
+  <div class="research-section">
+    <div class="research-overlay"></div>
+    <div class="container" style="position:relative; z-index:2;">
+      <div class="research-text">
+Research shows that each smartphone
+notification
+breaks focus, and people check their
+phones every few minutes.
+
+Notification overload
+increases stress,
+reduces productivity,
+and often leads users to disable alerts
+entirely.
+
+Our device filters notifications and
+shows only what truly matters, helping
+users
+regain control of their attention.
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- 8. square logos -->
+    <section class="fade-section">
+      <div class="logo-grid">
+        <div class="logo-item"><img src="https://placehold.co/400x400/111/FFF?text=LOGO_1" alt="logo 1" id="LOGO_1_URL"></div>
+        <div class="logo-item"><img src="https://placehold.co/400x400/111/FFF?text=LOGO_2" alt="logo 2" id="LOGO_2_URL"></div>
+        <div class="logo-item"><img src="https://placehold.co/400x400/111/FFF?text=LOGO_3" alt="logo 3" id="LOGO_3_URL"></div>
+        <div class="logo-item"><img src="https://placehold.co/400x400/111/FFF?text=LOGO_4" alt="logo 4" id="LOGO_4_URL"></div>
+      </div>
+    </section>
+
+    <footer>
+      ©2026 CRP. All right reserved.
+    </footer>
+  </div>
+</main>
+
+<!-- fixed bottom navbar (only HOME and ABOUT) -->
+<div class="bottom-nav">
+  <button class="nav-link" id="navHome">HOME</button>
+  <button class="nav-link" id="navAbout">ABOUT</button>
+</div>
+
+<script>
+  (function() {
+    // FADE-IN ON SCROLL
+    const fadeSections = document.querySelectorAll('.fade-section');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    fadeSections.forEach(section => observer.observe(section));
+
+    // WHATSAPP BUBBLES (click reveal importance, double-click reset)
+    const bubbles = document.querySelectorAll('.chat-bubble');
+    bubbles.forEach(bubble => {
+      const importance = bubble.getAttribute('data-importance');
+      const badge = bubble.querySelector('.importance-badge');
+      bubble.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (!bubble.classList.contains('revealed')) {
+          bubble.classList.add('revealed');
+          if (importance === 'important') {
+            badge.innerHTML = '⚬ ❗ IMPORTANT · requires attention';
+          } else {
+            badge.innerHTML = '⚬ ◌ NOT IMPORTANT · can be ignored';
+          }
+        }
+      });
+      bubble.addEventListener('dblclick', (e) => {
+        e.stopPropagation();
+        bubble.classList.remove('revealed');
+        badge.innerHTML = '⚬ importance: hidden — click to reveal';
+      });
+    });
+
+    // COUNTER ANIMATION (4500 & 8%)
+    const counter4500 = document.getElementById('counter4500');
+    const counter8 = document.getElementById('counter8');
+    let animated = false;
+    const counterObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && !animated) {
+          animated = true;
+          animateNumber(counter4500, 0, 4500, 1500);
+          animateNumber(counter8, 0, 8, 1200);
+        }
+      });
+    }, { threshold: 0.5 });
+    const classificationSec = document.getElementById('classification-section');
+    if (classificationSec) counterObserver.observe(classificationSec);
+
+    function animateNumber(el, start, end, duration) {
+      if (!el) return;
+      let current = start;
+      const step = (end - start) / (duration / 16);
+      const timer = setInterval(() => {
+        current += step;
+        if (current >= end) {
+          el.innerText = end;
+          clearInterval(timer);
+        } else {
+          el.innerText = Math.floor(current);
+        }
+      }, 16);
+    }
+
+    // BOTTOM NAV: HOME scrolls to hero, ABOUT does nothing (no navigation)
+    const homeBtn = document.getElementById('navHome');
+    const aboutBtn = document.getElementById('navAbout');
+    if (homeBtn) {
+      homeBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        document.querySelector('.hero')?.scrollIntoView({ behavior: 'smooth' });
+      });
+    }
+    if (aboutBtn) aboutBtn.addEventListener('click', (e) => e.preventDefault());
+
+    // Hero buttons: GET A CUBY already links, GET THE APP dummy (no navigation)
+    const getAppHero = document.getElementById('heroGetApp');
+    if (getAppHero) {
+      getAppHero.addEventListener('click', (e) => {
+        e.preventDefault();
+        // no action, placeholder
+        console.log('Get the app click – demo');
+      });
+    }
+
+    // small helper to ensure replaceable image URLs are obvious
+    console.log('CRP Focus — monochrome Swiss-tech, interactive notifications, full-image research, square logos');
+  })();
+</script>
+</body>
+</html>
