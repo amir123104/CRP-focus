@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://crp-company.github.io/CRP-focus/sitemap.xml
