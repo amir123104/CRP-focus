@@ -34,6 +34,11 @@
 
   <!-- Inter & Space Grotesk fonts (same as reference) -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- icons -->
+   <!-- Add this with your other fonts -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  
   <!-- Font Awesome 6 (free icons) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -79,7 +84,7 @@
       border-radius: 20px;
       padding: 24px;
       margin-bottom: 24px;
-      border: 1px solid #e5e7eb;
+      border: none;
       transition: all 0.2s ease;
     }
 
@@ -194,37 +199,45 @@
       transform: translateY(-2px);
     }
 
+    .classification-container {
+      display: flex;
+      flex-direction: row;
+      gap: 3rem;
+      align-items: stretch; /* optional: make children same height */
+    }
+
+    .classification-container > section {
+      flex: 1;
+      min-width: 0; /* prevent overflow */
+    }
+
     /* WhatsApp-style message bubbles */
     .notification-demo {
+      position: relative;
       display: flex;
-      flex-wrap: wrap;
+      flex-direction: column;
       gap: 2rem;
       justify-content: center;
+      align-items: flex-start;
       margin: 1rem 0;
+    }
+
+    .classification-grid {
+      max-width: 100%; /* remove previous max-width if any */
     }
 
     .chat-bubble {
       flex: 1;
       min-width: 260px;
       max-width: 360px;
-      background: #ffffff;
+      background: #FFFFFF;
       border: 1px solid #e5e7eb;
       border-radius: 24px;
+      border-bottom-left-radius: 6px;
       padding: 1.2rem 1.5rem;
       transition: all 0.2s;
       cursor: pointer;
       box-shadow: 0 1px 2px rgba(0,0,0,0.02);
-    }
-
-    .bubble-received {
-      border-bottom-left-radius: 6px;
-      background: #f9fafb;
-    }
-
-    .bubble-sent {
-      border-bottom-right-radius: 6px;
-      border-color: #111827;
-      border-width: 1.5px;
     }
 
     .bubble-header {
@@ -236,6 +249,125 @@
       color: #6b7280;
       margin-bottom: 0.5rem;
     }
+
+    /* Status icon that appears on click */
+    .status-icon {
+      display: none;
+      font-size: 1.2rem;
+      margin-left: 8px;
+      transition: all 0.3s ease;
+      line-height: 1.2rem;
+      height: 1.2rem;
+      width: 1.2rem;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    .chat-bubble.clicked .status-icon {
+      display: inline-block;
+    }
+
+    .chat-bubble.clicked.important .status-icon {
+      color: #059655;
+    }
+
+    .chat-bubble.clicked.not-important .status-icon {
+      color: #dc2626;
+    }
+
+    .bubble-header .header-left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ===== SCROLL ANIMATION ===== */
+
+    /* Hide meeting wrapper initially */
+    .meeting-wrapper {
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition: max-height 0.8s ease, opacity 0.8s ease;
+      margin-top: 1rem;
+    }
+
+    /* Meeting card style */
+    .meeting-card {
+      background: #f3f4f6;
+      border: 1px solid #e5e7eb;
+      border-radius: 20px;
+      padding: 0.8rem 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #111827;
+    }
+
+    .meeting-card .meeting-icon {
+      font-size: 1.4rem;
+      color: #059669;
+    }
+
+    /* Vertical line connecting bubble to meeting card */
+    .meeting-line {
+      width: 2px;
+      height: 30px;
+      background: #d1d5db;
+      margin: 0 auto;
+    }
+
+    /* Hide stay organized content initially */
+    .stay-organized-content {
+      display: none;
+    }
+
+    /* ---- SCROLLED STATE ---- */
+
+    .classification-container.scrolled .chat-bubble:not(.is-important) {
+      opacity: 0;
+      transform: translateY(20px);
+      max-height: 0;
+      padding: 0;
+      margin: 0;
+      border: 0;
+      overflow: hidden;
+      pointer-events: none;
+      transition: all 0.6s ease;
+    }
+
+    .classification-container.scrolled .meeting-wrapper {
+      max-height: 300px;  /* enough for the card */
+      opacity: 1;
+    }
+
+    .classification-container.scrolled .classification-grid {
+      display: none;
+    }
+
+    .classification-container.scrolled .stay-organized-content {
+      display: block;
+    }
+
+    /* Ensure the important bubble stays visible and centered */
+    .classification-container.scrolled .chat-bubble.is-important {
+      margin-bottom: 0.5rem;
+      transform: scale(1.02);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    }
+
+    /* When scrolled, make the whole container sticky and add extra scroll space */
+    .classification-container.sticky {
+      position: sticky;
+      top: 0;
+      margin-bottom: 100vh;   /* creates extra scroll distance */
+      z-index: 10;
+    }
+
+/* Optional: hide original stay organized section if you keep it */
+/* .stay-orginal { display: none; } */
 
     .message-text {
       font-size: 0.95rem;
@@ -384,11 +516,6 @@
       cursor: pointer;
     }
 
-    .nav-link:hover {
-      background: #f3f4f6;
-      transform: translateY(-2px);
-    }
-
     .nav-link.privacy {
       border: 1px solid #e5e7eb;
       background: #f9fafb;
@@ -478,7 +605,7 @@
 
 <!-- HERO with two buttons on right -->
 <section class="hero" id="home">
-  <img class="hero-bg" src="https://i.postimg.cc/1XtB68XJ/CRPfocus.png" alt="CRP Focus background" id="HERO_IMAGE_URL">
+  <img class="hero-bg" src="assets/CRPfocus.png" alt="CRP Focus background" id="HERO_IMAGE_URL">
   <div class="hero-overlay"></div>
   <div class="hero-content">
     <div class="hero-left">
@@ -493,42 +620,74 @@
 
 <main>
   <div class="container">
-    <!-- 2. Notification demo (WhatsApp style bubbles) -->
-    <section class="fade-section">
-      <div class="mobile-card">
-        <div class="notification-demo">
-          <div class="chat-bubble bubble-received" data-importance="not-important">
-            <div class="bubble-header"><span>Instagram</span><span>2 min ago</span></div>
-            <div class="message-text">liked your photo · "summer memories"</div>
-            <div class="importance-badge">⚬ importance: hidden — click to reveal</div>
+    <!-- 3. classification section -->
+    <div class="classification-container">
+      <section class="fade-section">
+        <div class="mobile-card">
+          <div class="notification-demo">
+            <div class="chat-bubble" data-importance="not-important">
+              <div class="bubble-header">
+                <span class="header-left">
+                  <span>Instagram</span>
+                  <span class="status-icon material-symbols-outlined">cancel</span>
+                </span>
+              </div>
+              <div class="message-text">juhn liked your video</div>
+            </div>
+            <div class="chat-bubble is-important" data-importance="important">
+              <div class="bubble-header">
+                <span class="header-left">
+                  <span>boss</span>
+                  <span class="status-icon material-symbols-outlined">check</span>
+                </span>
+              </div>
+              <div class="message-text">The boardroom meeting is in 12 minutes</div>
+            </div>
+            <div class="chat-bubble" data-importance="not-important">
+              <div class="bubble-header">
+                <span class="header-left">
+                  <span>lior</span>
+                  <span class="status-icon material-symbols-outlined">cancel</span>
+                </span>
+              </div>
+              <div class="message-text">Haha thats funny</div>
+            </div>
+            <div class="chat-bubble" data-importance="not-important">
+              <div class="bubble-header">
+                <span class="header-left">
+                  <span>arthur</span>
+                  <span class="status-icon material-symbols-outlined">cancel</span>
+                </span>
+              </div>
+              <div class="message-text">I'll see what I can do about it but I'm currently sick so I probably won't anyway</div>
+            </div>
           </div>
-          <div class="chat-bubble bubble-sent" data-importance="important">
-            <div class="bubble-header"><span>CRP Focus · cuby</span><span>just now</span></div>
-            <div class="message-text">Boardroom meeting in 12 minutes. High priority.</div>
-            <div class="importance-badge">⚬ importance: hidden — click to reveal</div>
+          <div class="meeting-wrapper">
+            <div class="meeting-line"></div>
+            <div class="meeting-card">
+              <span class="meeting-icon material-symbols-outlined">event</span>
+              <span>Meeting – at 13:00</span>
+            </div>
+          </div>
+          <div class="interactive-hint">click any message to reveal</div>
+        </div>
+      </section>
+
+      <section class="fade-section" id="classification-section">
+        <div class="section-title">classification</div>
+        <div class="classification-grid">
+          <p class="lead-text">CRP focus classifies all of your notifications to important and not important</p>
+          <p>we found that in average, one person gets over <strong class="stat-bold"><span id="counter4500">4,500</span></strong> messages per day and only <strong class="stat-bold"><span id="counter8">8</span>%</strong> of them are really necessary</p>
+          <p>so now, you don't need anymore to open every time your phone just to find out its not important,<br>your cuby will tell you when its important.</p>
+        </div>
+        <div class="stay-organized-content">
+          <div class="section-title">stay organized</div>
+          <div class="stay-block">
+            <p>CRP focus also can detect meetings, events and tasks<br>and add them to a task list and google calendar</p>
           </div>
         </div>
-        <div class="interactive-hint">click any message to reveal importance (double‑click to reset)</div>
-      </div>
-    </section>
-
-    <!-- 3. classification section -->
-    <section class="fade-section" id="classification-section">
-      <div class="section-title">classification</div>
-      <div class="classification-grid">
-        <p class="lead-text">CRP focus classifies all of your notifications to important and not important</p>
-        <p>we found that in average, one person gets over <strong class="stat-bold"><span id="counter4500">4,500</span></strong> messages per day and only <strong class="stat-bold"><span id="counter8">8</span>%</strong> of them are really necessary</p>
-        <p>so now, you don't need anymore to open every time your phone just to find out its not important,<br>your cuby will tell you when its important.</p>
-      </div>
-    </section>
-
-    <!-- 4. stay organized -->
-    <section class="fade-section">
-      <div class="section-title">stay organized</div>
-      <div class="stay-block">
-        <p>CRP focus also can detect meetings, events and tasks<br>and add them to a task list and google calendar</p>
-      </div>
-    </section>
+      </section>
+    </div>
 
     <!-- 5. connect (left aligned) -->
     <section class="fade-section">
@@ -550,21 +709,21 @@
     <div class="research-overlay"></div>
     <div class="container" style="position:relative; z-index:2;">
       <div class="research-text">
-Research shows that each smartphone
-notification
-breaks focus, and people check their
-phones every few minutes.
+        Research shows that each smartphone
+        notification
+        breaks focus, and people check their
+        phones every few minutes.
 
-Notification overload
-increases stress,
-reduces productivity,
-and often leads users to disable alerts
-entirely.
+        Notification overload
+        increases stress,
+        reduces productivity,
+        and often leads users to disable alerts
+        entirely.
 
-Now with CRP focus your cuby can filter notifications and
-Only shows what's really important, helps
-You
-Regain control over their attention.
+        Now with CRP focus your cuby can filter notifications and
+        Only shows what's really important, helps
+        You
+        Regain control over their attention.
       </div>
     </div>
   </div>
@@ -613,26 +772,58 @@ Regain control over their attention.
 
     // WHATSAPP BUBBLES (click reveal importance, double-click reset)
     const bubbles = document.querySelectorAll('.chat-bubble');
+    
     bubbles.forEach(bubble => {
       const importance = bubble.getAttribute('data-importance');
-      const badge = bubble.querySelector('.importance-badge');
+      
+      // Single click - show icon with color
       bubble.addEventListener('click', (e) => {
         e.stopPropagation();
-        if (!bubble.classList.contains('revealed')) {
-          bubble.classList.add('revealed');
-          if (importance === 'important') {
-            badge.innerHTML = '⚬ IMPORTANT · requires attention';
-          } else {
-            badge.innerHTML = '⚬ NOT IMPORTANT · can be ignored';
-          }
+        
+        // Toggle clicked state
+        if (!bubble.classList.contains('clicked')) {
+          bubble.classList.add('clicked');
+          bubble.classList.add(importance);
+        } else {
+          bubble.classList.remove('clicked');
+          bubble.classList.remove('important', 'not-important');
         }
       });
-      bubble.addEventListener('dblclick', (e) => {
-        e.stopPropagation();
-        bubble.classList.remove('revealed');
-        badge.innerHTML = '⚬ importance: hidden — click to reveal';
-      });
     });
+
+    // SCROLL TRIGGER for sticky + animation
+    const container = document.querySelector('.classification-container');
+    let stickyStartScroll = 0;
+    let animationTriggered = false;
+
+    function checkScroll() {
+      const rect = container.getBoundingClientRect();
+      
+      // ----- STICKY (apply when container reaches top) -----
+      if (rect.top <= 0) {
+        if (!container.classList.contains('sticky')) {
+          container.classList.add('sticky');
+          // Record the scroll position when sticky starts
+          stickyStartScroll = window.scrollY;
+        }
+      } else {
+        container.classList.remove('sticky');
+        // Reset if you want to allow re-trigger (optional)
+        // animationTriggered = false; 
+      }
+
+      // ----- ANIMATION (scrolled) triggers after 100px of extra scroll -----
+      if (!animationTriggered && container.classList.contains('sticky')) {
+        const scrolledSinceSticky = window.scrollY - stickyStartScroll;
+        if (scrolledSinceSticky >= 400) {  // adjust threshold (px)
+          container.classList.add('scrolled');
+          animationTriggered = true;
+        }
+      }
+    }
+
+    window.addEventListener('scroll', checkScroll, { passive: true });
+    checkScroll();  // check on load
 
     // COUNTER ANIMATION (4500 & 8%) — now starting from 4,500 and 8
     const counter4500 = document.getElementById('counter4500');
