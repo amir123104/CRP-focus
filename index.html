@@ -815,7 +815,7 @@
       // ----- ANIMATION (scrolled) triggers after 100px of extra scroll -----
       if (!animationTriggered && container.classList.contains('sticky')) {
         const scrolledSinceSticky = window.scrollY - stickyStartScroll;
-        if (scrolledSinceSticky >= 400) {  // adjust threshold (px)
+        if (scrolledSinceSticky >= 200) {  // adjust threshold (px)
           container.classList.add('scrolled');
           animationTriggered = true;
         }
